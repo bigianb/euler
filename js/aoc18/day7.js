@@ -101,3 +101,75 @@ let data = [
 "Step I must be finished before step E can begin.",
 "Step A must be finished before step D can begin."
 ];
+
+let testData = 
+[
+"Step C must be finished before step A can begin.",
+"Step C must be finished before step F can begin.",
+"Step A must be finished before step B can begin.",
+"Step A must be finished before step D can begin.",
+"Step B must be finished before step E can begin.",
+"Step D must be finished before step E can begin.",
+"Step F must be finished before step E can begin."
+];
+
+//data = testData;
+
+function getPrePost(desc)
+{
+    let pre = desc[5];
+    let post = desc[36];
+    return {pre:pre, post:post}
+}
+
+function findSteps(theData)
+{
+    let steps = {}
+    for (let row of theData){
+        let nodedef = getPrePost(row);
+        steps[nodedef.pre] = 1;
+        steps[nodedef.post] = 1;
+    }
+    return Object.keys(steps)
+}
+
+// returns the steps that are ready to execute
+function getReadySteps(theData, allSteps, finishedSteps)
+{
+    let notReadySteps = {};
+    for (row of theData){
+        let nodedef = getPrePost(row);
+        if (!finishedSteps.includes(nodedef.post)){
+            // haven't done this step yet
+            if (!finishedSteps.includes(nodedef.pre)){
+                notReadySteps[nodedef.post] = 1;
+            }
+        }
+    }
+    let readySteps=[];
+    for (let step of allSteps){
+        if (!notReadySteps[step] && !finishedSteps.includes(step)){
+            readySteps.push(step);
+        }
+    }
+    return readySteps;
+}
+
+function doStep1()
+{
+    let allSteps = findSteps(data);
+    let finished = [];
+
+    var ready;
+    do {
+        ready = getReadySteps(data, allSteps, finished);
+        if (ready.length > 0){
+            ready.sort();
+            finished += ready[0];
+        } 
+    } while (ready.length > 0);
+    return finished;
+}
+
+console.log("step 1: " + doStep1());
+
