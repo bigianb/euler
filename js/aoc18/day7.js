@@ -173,3 +173,107 @@ function doStep1()
 
 console.log("step 1: " + doStep1());
 
+/*
+As you're about to begin construction, four of the Elves offer to help.
+"The sun will set soon; it'll go faster if we work together."
+Now, you need to account for multiple people working on steps simultaneously.
+If multiple steps are available, workers should still begin them in alphabetical order.
+
+Each step takes 60 seconds plus an amount corresponding to its letter: A=1, B=2, C=3, and so on.
+So, step A takes 60+1=61 seconds, while step Z takes 60+26=86 seconds.
+No time is required between steps.
+
+To simplify things for the example, however, suppose you only have help from one Elf
+(a total of two workers) and that each step takes 60 fewer seconds
+
+(so that step A takes 1 second and step Z takes 26 seconds).
+Then, using the same instructions as above, this is how each second would be spent:
+In this example, it would take 15 seconds for two workers to complete these steps.
+
+With 5 workers and the 60+ second step durations described above,
+how long will it take to complete all of the steps?
+*/
+
+function durationForStep(step)
+{
+    return 60 + step.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+}
+
+
+if (durationForStep('A') != 61 || durationForStep('Z') != 86){
+    console.error('durationForStep() is broke')
+}
+
+ 
+// Waits until a worker is free. Returns the new current time. Ignore unassigned workers.
+function waitForWorker(workers, currentTime)
+{
+    let minTime = currentTime+1000;
+    for (let worker of workers){
+        if (worker.step && worker.completionTime < minTime){
+            minTime = worker.completionTime;
+        }
+    }
+    return minTime < currentTime ? currentTime : minTime;
+}
+
+// returns the step assigned
+function assignWorker(workers, currentTime, steps)
+{
+    for (let worker of workers){
+        if (worker.step){
+            steps = steps.filter(item => item != worker.step);
+        }
+    }
+
+    if (steps.length > 0){
+        for (let worker of workers){
+            if (worker.completionTime <= currentTime){
+                worker.step = steps[0];
+                worker.completionTime = currentTime + durationForStep(steps[0]);
+                return worker.step;
+            }
+        }
+    }
+    return null;
+}
+
+
+function updateFinished(workers, currentTime, finished)
+{
+    for (let worker of workers){
+        if (worker.step && worker.completionTime <= currentTime){
+            finished += worker.step;
+            worker.step = null;
+        }
+    }
+    return finished;
+}
+
+function doStep2()
+{
+    let workers = []
+
+    for (let worker=0; worker < 5; ++worker){
+        workers.push({step: null, completionTime: 0})
+    }
+
+    let currentTime=0;
+    let allSteps = findSteps(data);
+    let finished = [];
+
+    var ready;
+
+    do {
+        finished = updateFinished(workers, currentTime, finished);
+        ready = getReadySteps(data, allSteps, finished);
+        if (ready.length > 0){
+            if (!assignWorker(workers, currentTime, ready)){
+                currentTime = waitForWorker(workers, currentTime);
+            }
+        }
+    } while (ready.length > 0);
+    return currentTime;
+}
+
+console.log("step 2 took: " + doStep2());
