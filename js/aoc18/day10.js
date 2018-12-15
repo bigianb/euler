@@ -305,11 +305,11 @@ let data = [
 {position: [-30302,  10293], velocity: [ 3, -1]}
 ];
 
-function applyStep(theData)
+function applyStep(theData, num=1)
 {
     for (d of theData){
-        d.position[0] += d.velocity[0];
-        d.position[1] += d.velocity[1];
+        d.position[0] += d.velocity[0]*num;
+        d.position[1] += d.velocity[1]*num;
     }
 }
 
@@ -325,9 +325,31 @@ function findBoundingBox(theData)
     return bbox;
 }
 
-for (let step=0; step<10000; ++step){
-    applyStep(data);
+function hasStar(theData, x, y){
+    for (d of theData){
+        if (d.position[0] == x && d.position[1] == y){
+            return true;
+        }
+    }
+    return false;
 }
+
+function printArray(theData){
+    let bbox=findBoundingBox(data);
+    let w = bbox.x1 - bbox.x0;
+    let h = bbox.y1 - bbox.y0;
+    console.log("w: " + w + ", h: " + h);
+    for (let y=bbox.y0; y <= bbox.y1; ++y){
+        let line="";
+        for (let x=bbox.x0; x <= bbox.x1; ++x){
+            line += hasStar(theData, x, y) ? '*' : ' ';
+        }
+        console.log(line);
+    }
+}
+
+let step=10120;
+applyStep(data, step);
 
 console.log(findBoundingBox(data));
 let bbox = findBoundingBox(data)
@@ -335,13 +357,23 @@ let w = bbox.x1 - bbox.x0;
 let h = bbox.y1 - bbox.y0;
 let a = w * h;
 let preva = a;
-do {
+
+// can use this to figure out the minimum area which is a good heuristic.
+/*do {
     preva = a;
     applyStep(data);
     bbox = findBoundingBox(data)
     w = bbox.x1 - bbox.x0;
     h = bbox.y1 - bbox.y0;
     a = w * h;
+    ++step;
 } while (a < preva)
+*/
 
-console.log(findBoundingBox(data));
+for (let i=0; i<50; ++i){
+    applyStep(data);
+    ++step;
+    console.log(step);
+    printArray(data);
+
+}
