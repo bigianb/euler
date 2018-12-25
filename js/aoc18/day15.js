@@ -133,42 +133,54 @@ function findTargetSquares(enemies, map)
 
 function findBestMove(unit, targets, map)
 {
+    let candidates = findClosestTargets(unit.x, unit.y, targets, map);
+    if (candidates.length > 1){
+        // more than one target has the same distance. Select the one first in reading order.
+        let candidateTargets=[]
+        for (let c of candidates){
+            candidateTargets.push(targets[c.targetIdx]);
+        }
+        candidateTargets.sort(function(a,b){return (a.y*100+a.x) - (b.y*100+b.x)});
+        let newTargets=[];
+        newTargets.push(candidateTargets[0]);
+        targets = newTargets;
+    }
     // There may be more than one closest route.
     // In which case pick the one where the first move is closest in reading order.
     // so, u, l, r, d
     let bestMove = {dist:100000}
     //u
     if (unit.y > 0 && map[unit.y-1][unit.x] == '.'){
-        let closest = findClosestTarget(unit.x, unit.y-1, targets, map);
-        if (closest.valid){
-            bestMove.dist = closest.route.length;
+        let closest = findClosestTargets(unit.x, unit.y-1, targets, map);
+        if (closest.length > 0){
+            bestMove.dist = closest[0].route.length;
             bestMove.x = unit.x;
             bestMove.y = unit.y-1;
         }
     }
     //l
     if (unit.x > 0 && map[unit.y][unit.x-1] == '.'){
-        let closest = findClosestTarget(unit.x-1, unit.y, targets, map);
-        if (closest.valid && closest.route.length < bestMove.dist){
-            bestMove.dist = closest.route.length;
+        let closest = findClosestTargets(unit.x-1, unit.y, targets, map);
+        if ((closest.length > 0) && closest[0].route.length < bestMove.dist){
+            bestMove.dist = closest[0].route.length;
             bestMove.x = unit.x-1;
             bestMove.y = unit.y;
         }
     }
     //r
     if (unit.x < map[unit.y].length - 1 && map[unit.y][unit.x+1] == '.'){
-        let closest = findClosestTarget(unit.x+1, unit.y, targets, map);
-        if (closest.valid && closest.route.length < bestMove.dist){
-            bestMove.dist = closest.route.length;
+        let closest = findClosestTargets(unit.x+1, unit.y, targets, map);
+        if ((closest.length > 0) && closest[0].route.length < bestMove.dist){
+            bestMove.dist = closest[0].route.length;
             bestMove.x = unit.x+1;
             bestMove.y = unit.y;
         }
     }
     //d
     if (unit.y < map.length - 1 && map[unit.y+1][unit.x] == '.'){
-        let closest = findClosestTarget(unit.x, unit.y+1, targets, map);
-        if (closest.valid && closest.route.length < bestMove.dist){
-            bestMove.dist = closest.route.length;
+        let closest = findClosestTargets(unit.x, unit.y+1, targets, map);
+        if ((closest.length > 0) && closest[0].route.length < bestMove.dist){
+            bestMove.dist = closest[0].route.length;
             bestMove.x = unit.x;
             bestMove.y = unit.y+1;
         }
@@ -176,9 +188,20 @@ function findBestMove(unit, targets, map)
     return bestMove;
 }
 
-function findClosestTarget(x, y, targets, map)
+function considerRoute(route, closest)
 {
-    let closest = {targetIdx:0, route: [], valid: false}
+    let len = route.route.length;
+    if (closest.length == 0 || closest[0].route.length > len){
+        closest = [route];
+    } else if (closest[0].route.length == len){
+        closest.push(route);
+    } 
+    return closest;
+}
+
+function findClosestTargets(x, y, targets, map)
+{
+    let closest = [];
     
     let g = [];
     for (let row of map){
@@ -195,9 +218,7 @@ function findClosestTarget(x, y, targets, map)
     for (let targetIdx=0; targetIdx < targets.length; ++targetIdx){
         const tgt = targets[targetIdx];
         if (x == tgt.x && y == tgt.y){
-            closest.targetIdx = targetIdx;
-            closest.valid = true;
-            closest.route = [];
+            closest = considerRoute({targetIdx: targetIdx, route: []}, closest);
             break;
         } else {
             var start = graph.grid[y][x];
@@ -205,11 +226,7 @@ function findClosestTarget(x, y, targets, map)
             var result = AStar.astar.search(graph, start, end);
             const d = result.length;
             if (d > 0){
-                if(!closest.valid || d.length < closest.route.length){    
-                    closest.route = result;
-                    closest.targetIdx = targetIdx;
-                    closest.valid = true;
-                }
+                closest = considerRoute({targetIdx: targetIdx, route: result}, closest);
             }
         }
     }
