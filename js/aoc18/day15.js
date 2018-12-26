@@ -45,15 +45,18 @@ let ex1Data=[
 
 var AStar = require('./astar.js')
 
-function findUnits(map)
+function findUnits(map, elfAttackPts)
 {
     let units = []
     for (let y=0; y<map.length; ++y){
         const row = map[y];
         for (let x=0; x<row.length; ++x){
             let cell = row[x]
-            if (cell == 'G' || cell == 'E'){
+            if (cell == 'G'){
                 units.push({type: cell, x:x, y:y, hp:200, attack:3})
+            }
+            if (cell == 'E'){
+                units.push({type: cell, x:x, y:y, hp:200, attack:elfAttackPts})
             }
         }
     }
@@ -245,7 +248,7 @@ function moveTowardsTarget(unit, bestMove, map)
 
 function areWeDoneYet(map)
 {
-    let units = findUnits(map);
+    let units = findUnits(map, 3);
     if (units.length < 2){
         return true;
     }
@@ -300,11 +303,14 @@ function sumHp(units)
     return sum;
 }
 
-function run(map_in)
+function run(map_in, attackPoints)
 {
+    if (!attackPoints){
+        attackPoints=3;
+    }
     let map=buildMap(map_in);
     let round=0;
-    let units = findUnits(map);
+    let units = findUnits(map, attackPoints);
     do {
         ++round;
         units.sort(function(a,b){return (a.y*100+a.x) - (b.y*100+b.x)});
@@ -339,7 +345,7 @@ function run(map_in)
     } while (!areWeDoneYet(map));
     let sum = sumHp(units);
     console.log('sum='+sum+', round='+round)
-    return round*sum;
+    return {value: round*sum, units: units};
 }
 
 console.log(run(ex1Data));
@@ -412,3 +418,19 @@ console.log(run(
 
 console.log(run(data));
 
+console.log("part 2");
+
+let done=false;
+let attackVal=3;
+let units = findUnits(data, 3);
+let numElves = units.filter(x => x.type == 'E').length;
+do {
+    ++attackVal;
+    let result = run(data, attackVal);
+    let numSurvivingElves = result.units.filter(x => x.type == 'E').length;
+    if (numSurvivingElves == numElves){
+        done=true;
+        console.log("attack = " + attackVal);
+    }
+
+} while (!done);
