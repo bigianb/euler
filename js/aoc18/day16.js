@@ -4295,3 +4295,43 @@ for (let experiment of experiments){
 
 console.log('step 1 answer = ' + matched3.length);
 
+let opcodeMapping = []
+let unmatchedNames = opcodeNames.slice(0);
+while (unmatchedNames.length > 0){
+    for (let experiment of experiments){
+        let opcodeNum = experiment.opcode[0];
+        if (opcodeMapping[opcodeNum] == undefined){
+            let matched = [];
+            for (let name of unmatchedNames){
+                let out = processInstr(name, experiment.opcode, experiment.before);
+                if ((out[0] == experiment.after[0]) &&
+                    (out[1] == experiment.after[1]) &&
+                    (out[2] == experiment.after[2]) &&
+                    (out[3] == experiment.after[3])
+                    ){
+                        matched.push(name);
+                    }
+            }
+            if (matched.length == 1){
+                opcodeMapping[opcodeNum] = matched[0];
+                unmatchedNames = unmatchedNames.filter(x => x != matched[0]);
+            }
+        }
+    }
+}
+
+console.log(opcodeMapping);
+
+let regs = [0,0,0,0];
+for (let opcodeStr of data2){
+    let opcode = opcodeStr.split(" ");
+    let opcodeN = [];
+    opcodeN[0] = Number(opcode[0]);
+    opcodeN[1] = Number(opcode[1]);
+    opcodeN[2] = Number(opcode[2]);
+    opcodeN[3] = Number(opcode[3]);
+    let name = opcodeMapping[opcodeN[0]];
+    regs = processInstr(name, opcodeN, regs);
+}
+
+console.log(regs);
