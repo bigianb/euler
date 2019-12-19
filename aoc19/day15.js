@@ -243,7 +243,6 @@ const backTrackDir = [1, 0, 3, 2]
 
 function buildTreeNode(state, depth, dirFromCommand)
 {
-    console.log(depth);
     let node = {children:[], isGoal: false, depth: depth, pos: {...state.pos}}
     // explore each direction
     for (let dir = 0; dir < 4; ++dir){
@@ -262,11 +261,13 @@ function buildTreeNode(state, depth, dirFromCommand)
         switch(status){
             case 0:
                 // hit a wall.
+                markMap(state.map, potentialPos, '#');
                 node.children.push(null);
                 break;
             case 1:
                 // moved. explore that direction...
                 {
+                    markMap(state.map, potentialPos, '.');
                     state.pos = {...potentialPos};
                     let child = buildTreeNode(state, depth+1, backtrackCommand);
                     node.children.push(child);
@@ -280,6 +281,7 @@ function buildTreeNode(state, depth, dirFromCommand)
             case 2:
                 // moved and found goal
                 {
+                    markMap(state.map, potentialPos, 'O');
                     let child = {isGoal: true, children: [], depth:depth+1, pos: {...potentialPos}};
                     state.goalNodes.push(child);
                     node.children.push(child);
@@ -294,6 +296,22 @@ function buildTreeNode(state, depth, dirFromCommand)
     return node;
 }
 
+function markMap(map, pos, val)
+{
+    map.vals[pos.y][pos.x] = val;
+}
+
+function buildEmptyMap(w, h)
+{
+    let map = {w, h, vals: []}
+    for (let y=0; y<h; ++y){
+        let row = [];
+        row.length = w;
+        map.vals.push(row.fill(' '));
+    }
+    return map;
+}
+
 function buildTree(program)
 {  
     let state = {
@@ -303,18 +321,78 @@ function buildTree(program)
             mem: [...program],
             output: {}
         },
-        map: {},
         pos: {x:21, y:21},
         bbox: {x0:0, y0:0, x1:0, y1:0},
         goalNodes: []
     }
-
+    state.map = buildEmptyMap(42, 42);
+    markMap(state.map, state.pos, '.');
     state.root = buildTreeNode(state, 0, -1);
 
     return state;
 }
 
+function displayMap(map)
+{
+    for (let row of map.vals){
+        console.log(row.join(''))
+    }
+}
+
+function getMapVal(map, x, y)
+{
+    if (x < 0 || x>=map.w || y < 0 || y >= map.h){
+        return ' ';
+    }
+    return map.vals[y][x];
+}
+
+function hasO2Nieghbour(map, x, y)
+{
+    let hasO2 = getMapVal(map, x-1, y) == 'O' || 
+                getMapVal(map, x+1, y) == 'O' || 
+                getMapVal(map, x, y-1) == 'O' || 
+                getMapVal(map, x, y+1) == 'O';
+    return hasO2;
+}
+
+function fillWithO2(map)
+{
+    let step=0;
+    let someFilled=false;
+    do {
+        someFilled=false;
+        let newVals = [];
+        for (let yy=0; yy<map.h; ++yy){
+            let row = [];
+            for (let xx=0; xx<map.w; ++xx){
+                let val = getMapVal(map, xx, yy);
+                if (val === '.'){
+                    if (hasO2Nieghbour(map, xx, yy)){
+                        val = 'O';
+                        someFilled=true;
+                    }
+                }
+                row.push(val);
+            }
+            newVals.push(row);
+        }
+        map.vals = newVals;
+        if (someFilled){
+            ++step;
+        }
+    } while (someFilled);
+
+    return step;
+
+}
+
 let state = buildTree(program_in);
+displayMap(state.map);
+
+let steps = fillWithO2(state.map);
+displayMap(state.map);
+console.log(steps);
 
 // {"x0":-21,"y0":-21,"x1":19,"y1":19}
 console.log(JSON.stringify(state.bbox));
