@@ -174,4 +174,36 @@ function runProgram(program, input)
     return output;
 }
 
-module.exports = {run, runProgram}
+function runASCIIProgram(program, inputStr)
+{
+    let input = [];
+    for (let c of inputStr)
+    {
+        input.push(c.charCodeAt(0));
+    }
+    return runProgram(program, input);
+}
+
+function parseASCIIOutput(out, log)
+{
+    let rows=[]
+    let row = ""
+    for (let c of out){
+        if (c == 10){
+            rows.push(row);
+            row = "";
+        } else {
+            row += String.fromCharCode(c);
+        }
+    }
+
+    if (log){
+        for(let r of rows){
+            console.log(r);
+        }
+    }
+
+    return rows;
+}
+
+module.exports = {run, runProgram, runASCIIProgram, parseASCIIOutput}
