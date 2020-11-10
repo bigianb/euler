@@ -115,6 +115,24 @@ function findStart(inputMap)
     return {x, y}
 }
 
+function findAllKeys(inputMap)
+{
+    let keys = [];
+    let x=0;
+    let y=0;
+    while (y < inputMap.length){
+        let row = inputMap[y];
+        for (x=0; x<row.length; ++x){
+            if(/[a-z]/.test(row[x])){
+                keys.push(row[x]);
+            }
+        }
+        ++y;
+    }
+
+    return keys;
+}
+
 function findNeighbours(pos, inputMap)
 {
     let neighbours = [];
@@ -134,24 +152,57 @@ function findNeighbours(pos, inputMap)
     return neighbours;
 }
 
-// Given a start position, a set of held keys and an inputMap, return the keys we can reach and the minimum distance to each one.
-function findAvailableKeys(start, keys, inputMap)
+function printPos(pos)
 {
+    return "" + pos.x + "," + pos.y;
+}
+
+// Given a start position, a set of held keys and an inputMap,
+// return the keys we can reach and the minimum distance to each one.
+function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
+{
+    // track where we have been so we don't backtrack.
+    visited[printPos(start)] = distance;
+
     // Keep searching until we hit a wall or a locked door.
     let neighbours = findNeighbours(start, inputMap);
-    console.log(neighbours);
+    for (let neighbour of neighbours){
+        if (!(printPos(neighbour) in visited)){
+            let el = inputMap[neighbour.y][neighbour.x];
+            // check lowercase letter for key
+            if(/[a-z]/.test(el)){
+                keys[el] = distance+1;
+            }
+            
+            let keepGoing = true;
+            // check uppercase letter for door
+            if(/[A-Z]/.test(el)){
+                // Check if we have the key
+                if (!(el.toLowerCase() in keys)){
+                    keepGoing = false;
+                }
+            }
+            if (keepGoing){
+                keys = findAvailableKeys(neighbour, keys, inputMap, visited, distance+1);
+            }
+        }
+    }
 
-    return {};
+    return keys;
 }
 
 // Solves the given map and returns the minimum steps.
 function solve(inputMap)
 {
+    let allKeys = findAllKeys(inputMap);
+    console.log("found " + allKeys.length + " keys");
+
     let start = findStart(inputMap);
-    console.log("start = " + start);
-    let keys = [];
-    let availableKeys = findAvailableKeys(start, keys, inputMap);
-    console.log(availableKeys);
+    console.log("start = " + printPos(start));
+    
+    let keys = {};
+    keys = findAvailableKeys(start, keys, inputMap);
+    console.log(keys);
 
     return 0;
 }
