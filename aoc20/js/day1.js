@@ -1,4 +1,5 @@
 const fs = require('fs');
+const {performance } = require('perf_hooks');
 
 function readNumbersFromFile(filename)
 {
@@ -18,11 +19,9 @@ function findPair(numbers, sum)
     const size = numbers.length;
     for (let i=0; i<size; ++i){
         const ni = numbers[i];
-        for (let j=0; j<size; ++j){
-            if (i != j){
-                if (ni + numbers[j] == sum){
-                    return [ni, numbers[j]];
-                }
+        for (let j=i+1; j<size; ++j){
+            if (ni + numbers[j] == sum){
+                return [ni, numbers[j]];
             }
         }
     }
@@ -32,12 +31,12 @@ function findPair(numbers, sum)
 function findTriple(numbers, sum)
 {
     const size = numbers.length;
-    for (let i=0; i<size; ++i){
+    for (let i=0; i<size-2; ++i){
         const ni = numbers[i];
-        for (let j=0; j<size; ++j){
+        for (let j=i+1; j<size-1; ++j){
             const nj = numbers[j];
-            if (i != j && ni+nj < sum){
-                for (let k=0; k<size; ++k){
+            if (ni+nj < sum){
+                for (let k=j+1; k<size; ++k){
                     if (j != k){
                         if (ni + nj + numbers[k] == sum){
                             return [ni, nj, numbers[k]];
@@ -58,6 +57,18 @@ const realData = readNumbersFromFile('../inputs/day1.txt');
 pair = findPair(realData, 2020);
 console.log(pair[0] * pair[1]);
 
+const startT = performance.now();
 pair = findTriple(realData, 2020);
+const endT = performance.now();
 console.log(pair[0] + ', ' + pair[1] + ', ' + pair[2] + ' = ' + (pair[0] + pair[1] + pair[2]));
 console.log(pair[0] * pair[1] * pair[2]);
+console.log("Took "+ (endT - startT) + " ms");
+
+/*
+output:
+  514579
+  878724
+  266, 989, 765 = 2020
+  201251610
+  Took 3.1257929988205433 ms
+*/
