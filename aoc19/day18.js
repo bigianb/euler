@@ -117,14 +117,14 @@ function findStart(inputMap)
 
 function findAllKeys(inputMap)
 {
-    let keys = [];
+    let keys = {};
     let x=0;
     let y=0;
     while (y < inputMap.length){
         let row = inputMap[y];
         for (x=0; x<row.length; ++x){
             if(/[a-z]/.test(row[x])){
-                keys.push(row[x]);
+                keys[row[x]] = {x, y}
             }
         }
         ++y;
@@ -168,13 +168,19 @@ function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
     let neighbours = findNeighbours(start, inputMap);
     for (let neighbour of neighbours){
         if (!(printPos(neighbour) in visited)){
+            let keepGoing = true;
+
             let el = inputMap[neighbour.y][neighbour.x];
             // check lowercase letter for key
             if(/[a-z]/.test(el)){
-                keys[el] = distance+1;
+                if (!(el in keys)){
+                    // haven't seen this key before so pick it up
+                    keys[el] = distance+1;
+                    // stop because we want to explore paths from here.
+                    keepGoing = false;
+                }
             }
-            
-            let keepGoing = true;
+                
             // check uppercase letter for door
             if(/[A-Z]/.test(el)){
                 // Check if we have the key
@@ -191,6 +197,32 @@ function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
     return keys;
 }
 
+function buildCandidates(keys, allKeys)
+{
+    let candidatePaths = [];
+    let keysHeld = {}
+    for (let key of Object.keys(keys)){
+        if (keys[key] > 0){
+            keysHeld[key] = -1;
+        }
+    }
+    for (let key of Object.keys(keys)){
+        let stepsSoFar = keys[key];
+        
+        if (stepsSoFar > 0){
+            let cobj = {
+                stepsSoFar: keys[key],
+                keysHeld: {...keysHeld},
+                pos: allKeys[key]
+            }
+            cobj.keysHeld[key] = -1;
+            candidatePaths.push(cobj);
+
+        }
+    }
+    return candidatePaths;
+}
+
 // Solves the given map and returns the minimum steps.
 function solve(inputMap)
 {
@@ -200,14 +232,47 @@ function solve(inputMap)
     let start = findStart(inputMap);
     console.log("start = " + printPos(start));
     
+    //go down each path until all keys are found
     let keys = {};
     keys = findAvailableKeys(start, keys, inputMap);
     console.log(keys);
 
-    return 0;
+    let candidatePaths = buildCandidates(keys, allKeys);
+
+    console.log(JSON.stringify(candidatePaths))
+
+    let solution = {stepsSoFar: 1000000000}
+    const totalKeys = allKeys.length;
+
+    while(candidatePaths.length > 0){
+        let nextCandidates = [];
+        for (let candidate of candidatePaths){
+            keys = findAvailableKeys(candidate.pos, candidate.keysHeld, inputMap, {}, candidate.stepsSoFar);
+            let potentialNextCandidates = buildCandidates(keys, allKeys)
+            for (let nextCandidate of potentialNextCandidates){
+                if (nextCandidate.stepsSoFar > solution.stepsSoFar){
+                    // abort as we've already found a better path
+                } else if (nextCandidate.keysHeld.length === totalKeys){
+                    // done
+                    if (nextCandidate.stepsSoFar < solution.stepsSoFar){
+                        solution = nextCandidate;
+                    }
+                } else {
+                    // Explore from this location
+                    nextCandidates.push(nextCandidate);
+                }
+            }
+        }
+        candidatePaths = nextCandidates;
+        console.log(JSON.stringify(candidatePaths))
+    }
+
+    console.log(JSON.stringify(solution))
+    return solution.stepsSoFar;
 }
 
 let minSteps = solve(example136);
+console.log(minSteps);
 if (minSteps != 136){
     console.error("Expected 136 steps but got " + minSteps);
 }
