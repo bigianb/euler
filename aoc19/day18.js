@@ -164,6 +164,8 @@ function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
     // track where we have been so we don't backtrack.
     visited[printPos(start)] = distance;
 
+    let foundKeys = {}
+
     // Keep searching until we hit a wall or a locked door.
     let neighbours = findNeighbours(start, inputMap);
     for (let neighbour of neighbours){
@@ -175,7 +177,7 @@ function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
             if(/[a-z]/.test(el)){
                 if (!(el in keys)){
                     // haven't seen this key before so pick it up
-                    keys[el] = distance+1;
+                    foundKeys[el] = distance+1;
                     // stop because we want to explore paths from here.
                     keepGoing = false;
                 }
@@ -189,23 +191,19 @@ function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
                 }
             }
             if (keepGoing){
-                keys = findAvailableKeys(neighbour, keys, inputMap, visited, distance+1);
+                let nextKeys = findAvailableKeys(neighbour, keys, inputMap, visited, distance+1);
+                foundKeys = {...foundKeys, ...nextKeys}
             }
         }
     }
 
-    return keys;
+    return foundKeys;
 }
 
-function buildCandidates(keys, allKeys)
+function buildCandidates(keys, keysHeld, allKeys)
 {
     let candidatePaths = [];
-    let keysHeld = {}
-    for (let key of Object.keys(keys)){
-        if (keys[key] > 0){
-            keysHeld[key] = -1;
-        }
-    }
+    
     for (let key of Object.keys(keys)){
         let stepsSoFar = keys[key];
         
@@ -215,7 +213,7 @@ function buildCandidates(keys, allKeys)
                 keysHeld: {...keysHeld},
                 pos: allKeys[key]
             }
-            cobj.keysHeld[key] = -1;
+            cobj.keysHeld[key] = keys[key];
             candidatePaths.push(cobj);
 
         }
@@ -235,9 +233,9 @@ function solve(inputMap)
     //go down each path until all keys are found
     let keys = {};
     keys = findAvailableKeys(start, keys, inputMap);
-    console.log(keys);
+    console.log(JSON.stringify(keys));
 
-    let candidatePaths = buildCandidates(keys, allKeys);
+    let candidatePaths = buildCandidates(keys, {}, allKeys);
 
     console.log(JSON.stringify(candidatePaths))
 
@@ -248,7 +246,7 @@ function solve(inputMap)
         let nextCandidates = [];
         for (let candidate of candidatePaths){
             keys = findAvailableKeys(candidate.pos, candidate.keysHeld, inputMap, {}, candidate.stepsSoFar);
-            let potentialNextCandidates = buildCandidates(keys, allKeys)
+            let potentialNextCandidates = buildCandidates(keys, candidate.keysHeld, allKeys)
             for (let nextCandidate of potentialNextCandidates){
                 if (nextCandidate.stepsSoFar > solution.stepsSoFar){
                     // abort as we've already found a better path
@@ -264,15 +262,27 @@ function solve(inputMap)
             }
         }
         candidatePaths = nextCandidates;
-        console.log(JSON.stringify(candidatePaths))
+        console.log('candidate paths = ' + JSON.stringify(candidatePaths))
     }
 
     console.log(JSON.stringify(solution))
     return solution.stepsSoFar;
 }
 
-let minSteps = solve(example136);
+const example8=[
+"#########",
+"#b.A.@.a#",
+"#########"
+];
+
+const example86=[
+"########################",
+"#f.D.E.e.C.b.A.@.a.B.c.#",
+"######################.#",
+"#d.....................#",
+"########################"
+]
+
+let minSteps = solve(example86);
 console.log(minSteps);
-if (minSteps != 136){
-    console.error("Expected 136 steps but got " + minSteps);
-}
+
