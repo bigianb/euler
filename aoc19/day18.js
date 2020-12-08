@@ -240,7 +240,7 @@ function solve(inputMap)
     console.log(JSON.stringify(candidatePaths))
 
     let solution = {stepsSoFar: 1000000000}
-    const totalKeys = allKeys.length;
+    const totalKeys = Object.keys(allKeys).length;
 
     while(candidatePaths.length > 0){
         let nextCandidates = [];
@@ -250,7 +250,7 @@ function solve(inputMap)
             for (let nextCandidate of potentialNextCandidates){
                 if (nextCandidate.stepsSoFar > solution.stepsSoFar){
                     // abort as we've already found a better path
-                } else if (nextCandidate.keysHeld.length === totalKeys){
+                } else if (Object.keys(nextCandidate.keysHeld).length === totalKeys){
                     // done
                     if (nextCandidate.stepsSoFar < solution.stepsSoFar){
                         solution = nextCandidate;
@@ -283,6 +283,6 @@ const example86=[
 "########################"
 ]
 
-let minSteps = solve(example86);
+let minSteps = solve(example136);
 console.log(minSteps);
 
