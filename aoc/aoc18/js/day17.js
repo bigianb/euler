@@ -2176,3 +2176,218 @@ let testData = [
 {y: "13", x: "498..504"}
 ];
 
+function expandCoord(coord)
+{
+    let xpair = coord.x.split('..');
+    let ypair = coord.y.split('..');
+    let x0 = Number(xpair[0]);
+    let x1 = Number(xpair[1] || x0);
+    let y0 = Number(ypair[0]);
+    let y1 = Number(ypair[1] || y0);
+    return {x0, y0, x1, y1}
+}
+
+function findBounds(coords)
+{
+    let bbox = {x0: 1000, x1: -1000, y0: 1000, y1: -1000}
+    for (let coord of coords){
+        let {x0, y0, x1, y1} = expandCoord(coord);
+        if (x0 < bbox.x0) {bbox.x0 = x0}
+        if (x1 > bbox.x1) {bbox.x1 = x1}
+        if (y0 < bbox.y0) {bbox.y0 = y0}
+        if (y1 > bbox.y1) {bbox.y1 = y1}
+    }
+    bbox.x0 -= 1;
+    bbox.x1 += 1;
+    return bbox;
+}
+
+function buildEmptyMap(bbox)
+{
+    let rows = [];
+    let row=[];
+    for (let x=bbox.x0; x<bbox.x1+1;++x){
+        row.push('.');
+    }
+    for (let y=bbox.y0; y<bbox.y1+1; ++y){
+        rows.push([...row]);
+    }
+    return rows;
+}
+
+function buildMap(coords)
+{
+    let bbox = findBounds(coords);
+    console.log('bbox = ' + JSON.stringify(bbox));
+    let map = buildEmptyMap(bbox);
+    for (let coord of coords){
+        let {x0, y0, x1, y1} = expandCoord(coord);
+        for (let y = y0; y <= y1; ++y){
+            for (let x = x0; x <= x1; ++x){
+                let row = y - bbox.y0;
+                let col = x - bbox.x0;
+                map[row][col] = '#';
+            }
+        }
+    }
+    return {bbox, map};
+}
+
+function spreadable(map, x, y)
+{
+    const c = map[y][x];
+    return c === '.' || c === '|' || c === '/';
+}
+
+function squirtMap(map, sx, sy)
+{
+    //console.log('squirt at ' + sx + ', ' + sy);
+
+    // water drops vertically until it hits ~ or #
+    // it then spreads left and right.
+    // If blocked on both sides it becomes standing water ~.
+    // If not blocked, it becomes | and drops down the holes on either side.
+    let numChanges= 0;
+    for (let y=sy+1; y < map.length; ++y)
+    {
+        let c = map[y][sx];
+        if (c == '#' || c == '~'){ break }
+        if (c === '.'){
+            map[y][sx] = '|';
+            ++numChanges;
+        }
+        let yDown = y+1;
+        if (yDown === map.length){
+            // Done, fallen off the bottom
+        } else {
+            let cBelow = map[yDown][sx];
+            if (cBelow === '#' || cBelow === '~'){
+                // spread left and right.
+                let containedL = true;
+                let containedR = true;
+                let x0 = sx;
+                let x1 = sx;
+                while (x0 > 0){
+                    if (map[y][x0-1] === '#'){
+                        // contained up to x0 on LHS
+                        break;
+                    }
+                    if (spreadable(map, x0-1, yDown)){
+                        containedL = false;
+                        break;
+                    }
+                    x0--;
+                }
+                while (x1 < map[y].length){
+                    if (map[y][x1+1] === '#'){
+                        // contained up to x1 on RHS
+                        break;
+                    }
+                    if (spreadable(map, x1+1, yDown)){
+                        containedR = false;
+                        break;
+                    }
+                    x1++;
+                }
+                if (containedL && containedR){
+                    for (let x=x0; x<=x1; ++x){
+                        map[y][x] = '~';
+                        ++numChanges;
+                    }
+                } else {
+                    for (let x=x0; x<=x1; ++x){
+                        if (map[y][x] !== '|'){
+                            map[y][x] = '|';
+                            ++numChanges;
+                        }
+                    }
+                    if (!containedL){
+                        if (map[y][x0-1] !== '|' && map[y][x0-1] !== '/'){
+                            map[y][x0-1] = '|';
+                            ++numChanges;
+                        }
+                        if (map[y][x0-1] !== '/'){
+                            let changes = squirtMap(map, x0-1, y);
+                            if (changes === 0){
+                                map[y][x0-1] = '/';
+                            }
+                            numChanges += changes;
+                        }
+                    }
+                    if (!containedR){
+                        if (map[y][x1+1] !== '|' && map[y][x1+1] !== '/'){
+                            map[y][x1+1] = '|';
+                            ++numChanges;
+                        }
+                        if (map[y][x1+1] !== '/'){
+                            let changes = squirtMap(map, x1+1, y);
+                            if (changes === 0){
+                                map[y][x1+1] = '/';
+                            }
+                            numChanges += changes;
+                        }
+                    }
+                    if (!containedL || !containedR){
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return numChanges;
+}
+
+function floodMap(map, bbox, sx, sy)
+{
+    let allDone = false;
+    do {
+        let numChanges = squirtMap(map, sx - bbox.x0, -1);
+        //printMap(map);
+        console.log('num changes = ' + numChanges);
+        allDone = numChanges===0;
+    } while (!allDone);
+}
+
+function printMap(map)
+{
+    for (let row of map){
+        console.log(row.join(''));
+    }
+}
+
+function countDrops(map)
+{
+    let numDrops = 0;
+    for (let row of map){
+        for (let col of row){
+            if (col === '|' || col === '/'|| col === '~'){
+                ++numDrops;
+            }
+        }
+    }
+    return numDrops;
+}
+
+function countStanding(map)
+{
+    let numDrops = 0;
+    for (let row of map){
+        for (let col of row){
+            if (col === '~'){
+                ++numDrops;
+            }
+        }
+    }
+    return numDrops;
+}
+
+let {bbox, map} = buildMap(surveyData);
+
+floodMap(map, bbox, 500, 0)
+for (let row of map){
+    console.log(row.join(''));
+}
+let drops = countDrops(map);
+console.log(drops);
+console.log(countStanding(map));
+
