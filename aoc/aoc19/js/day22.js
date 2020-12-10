@@ -34,12 +34,8 @@ function applyShuffleStep(step, deck)
     {
         case 'cut':
             let cutVal = Number(step.args[0]);
-            if (cutVal > 0){
-                let newDeck = Array(deck.length);
-                
-            } else {
-
-            }
+            // works for both +ve and -ve cutVal
+            deck = deck.slice(cutVal).concat(deck.slice(0, cutVal));
             break;
         case 'deal':
             if (step.args[0] === 'into'){
@@ -72,3 +68,28 @@ function shuffle(steps, deckSize)
 let exampleShuffle = readFromFile('../inputs/day22_example.txt');
 let deck = shuffle(exampleShuffle, 10);
 console.log(JSON.stringify(deck));
+
+let data = readFromFile('../inputs/day22.txt');
+deck = shuffle(data, 10007);
+for (let i in deck){
+    if (deck[i] === 2019){
+        console.log('card 2019 is at position ' + i);
+    }
+}
+
+/* Part 2
+
+When you get back, you discover that the 3D printers have combined their power to create for you a single,
+giant, brand new, factory order deck of 119315717514047 space cards.
+
+Finally, a deck of cards worthy of shuffling!
+
+You decide to apply your complete shuffle process (your puzzle input) to the deck 101741582076661 times in a row.
+
+You'll need to be careful, though - one wrong move with this many cards and you might overflow your entire ship!
+
+After shuffling your new, giant, factory order deck that many times, what number is on the card that ends up in position 2020?
+
+*/
+
+// deck size is prime
