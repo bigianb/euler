@@ -88,6 +88,6 @@ function applyInstructions(pos, waypoint, instructions)
     return state.pos;
 }
 
-let instructions = readFromFile('../inputs/day11.txt');
+let instructions = readFromFile('../inputs/day12.txt');
 let pos = applyInstructions({x:0, y:0}, {x:10, y:-1}, instructions)
 console.log('Manhatten dist = ' + (Math.abs(pos.x) + Math.abs(pos.y)));
