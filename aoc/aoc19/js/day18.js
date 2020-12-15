@@ -1,155 +1,92 @@
-const input = [
-"#################################################################################",
-"#.........#q..#.......................#.#.....................#...#.............#",
-"#.#####.#.###.#.#######.#############.#.#.###################.#.#.#.#######.###.#",
-"#...#...#...#.....#...#g#...........#...#.#...........#.O.#...#.#.#...#...#.#...#",
-"###.#.#####.#######.#.#.#####.###.#.###.#.#####.#####.#.#.#.###.#F###.#.#.#.#T###",
-"#.#.#...#...#.......#...#...#...#.#.#...#.....#...#.#.#.#...#...#...#.#.#...#...#",
-"#.#.###.#.###.###########.#.#####.###.#######.#.#.#.#.#.#####.#####.#.#.#########",
-"#...#...#.....#...........#.....#.#y..#.#.....#.#.#...#.....#...#...#.#.#.......#",
-"#.###.#########.#####.#########.#.#.###.#.#######.#.#######.###.#.###.#.#.#####.#",
-"#...#.......#...#.....#.....#.....#.#...#.#.......#.....#.#...#.#.#.#.#.......#.#",
-"#.#######.#.#.#########.###.#.#####.#.#.#.###.#########.#.#.#.#.#.#.#.#########.#",
-"#.#.....#.#.#.#...#.......#.#.#.#...#.#.#...#.#...#...#...#.#.#.#.#...#.#.......#",
-"###.###.###.#.#.#.#.#######.#.#.#.#####.###.#.#.#.###.###.#.#.#.#.###.#.#.#####E#",
-"#...#.......#...#...#...#...#...#.#.....#.#...#.#.......#.#.#.#.#...#...#...#...#",
-"#.#################.###.#.#######.#.#.###.#####.#########.#.###.###.#.#####.#.###",
-"#.......#.....#...#...#.#.......#.#.#...#.................#.#...#.#.#.#.....#...#",
-"#.#####.#.###.#.#.###.#.#######.#.#####.#.#########.#######.#.###.#.#.#.#######.#",
-"#e#...#.#.#.#.#.#.#...........#.........#.#.......#.....#...#.#...#.#.#.#.C.#...#",
-"#.#.###.#.#.#.#.#.#######.#############.#.#.#####.#######.#.#.#.#.#.#.#.#.#.#.###",
-"#.#.#...#...#...#...#.....#...#...#.....#.#...#.#.....#...#.#.#.#.#.#.#.#.#.#.#.#",
-"#.#.#.#####.#######.#######.#.#.#.#######.###.#.#####.#.#####.#.#.#.###.#.###.#.#",
-"#...#.#...#.#.....#...#...#.#...#.......#.#...#...#...#.....#.#.#.#.....#.....#.#",
-"###.#.#.#.#.#####.#####.#.#.###########.#.#.###.#.#.###.###.###.#.#######.#####.#",
-"#...#...#.#.........#...#...#...#.......#.#.#...#.#.#.#...#.....#...#...#...#...#",
-"#.#######.#########.###.#######.#.#########.#.###.#.#.#.#####.###.#.#.#.###.#.#.#",
-"#.#.#.....#.......#.#...#.......#.#.#...#...#...#...#...#...#.#...#.#.#...#.#.#.#",
-"#.#.#.#####.#####.#.#.###.#######.#.#.#.#.#####.#####.###.#.###.###.#.#####.###Z#",
-"#...#.........#...#...#.#.........#..k#.#.#.....#.......#.#...#...#...#.....#...#",
-"###############.#.#####.#.#########.###.#.#.#############.###.###.#####.#####.#.#",
-"#...N...#...#...#.#...#...#.#...#...#...#.#.............#.#.......#...#.#....b#.#",
-"#.#####.#.#.#.###.###.#.###.#.#.#.###.#.#.#############.#.#########.#.#.###.###.#",
-"#.#.......#.#...#.....#.#...#.#...#...#.#.#...#.......#.#...#.....#.#.#.....#...#",
-"#.#########.###.#######.#.#.#.#####.###.#.#.#.#####.###.###.#.###.#.#.#######.###",
-"#.#...V.#.#.H.#.#.......#.#.#.....#...#.#...#.#...#.........#...#...#.......#...#",
-"#.#.###.#.###.#.#.#######.#####.#####.###.###.#.#.###.#####.###.#########.#####.#",
-"#.....#.#...#.#.#.#.......#.....#...#...#.#...#.#...#.#...#.#...#.......#.....#.#",
-"#.#####.#.###.#.#.#######.#.#####.#.###.###.#.#.###.###.#.###.###.#####.###.#.#.#",
-"#.#.#...#..a....#...#...#...#.....#...#.#...#.#...#.....#.....#.#.....#..h..#.#.#",
-"#.#.#.#############.#.#.#####.#######.#.#.#######.#############.#####.#########A#",
-"#...#.................#.......#.............................X.......#...........#",
-"#######################################.@.#######################################",
-"#.D.....#.....#.......#.....#.........................#.....#.......#.#...#...#.#",
-"#.###.#.#.#.#.#.#####.#.###.#.#.#######.#.###########.#.#.#.#.#####.#.#I#.#.#.#.#",
-"#i#...#.#.#.#...#.....#.#...#.#x......#.#.#.......#...#.#.#...#.......#.#...#.#.#",
-"###.###.###.#.#####.###.#.###.#######.#.#.###.###.#.#.#.#.#####.#######.#####.#.#",
-"#...#.......#.#...#.#...#...#.#.#.....#.#.....#.#.#.#.#.#v....#.#...#...#d..#...#",
-"#.#######.#####.#.#.#.#####.#.#.#.#####.#######.#.#.###.#####.#.#.###.###.#####.#",
-"#.#.....#.#....u#.#.#...#...#...#.#.#...#.#...#...#.#...#.....#.#.#...#.........#",
-"#.#.###.#.#.#####.#.###.#.#####.#.#.#.###.#.#.#.###.#.###.#####.#.#.###.#########",
-"#.S.#.#.#.#.....#.#...#.#...#...#.#.#.#.#...#.....#.#...#...#.....#...#...#..s..#",
-"#.###.#.#.#.#####.#.###.###.#.###.#.#.#.#.#########.#.#####.#########.###.#####.#",
-"#.#...#.#.#.#.....#.#...#...#.#.#.#.#...#.....#...#...#...#n..#.P...#.#.#.......#",
-"#.#.#.#.###.#.#####.#.###.###.#.#.#.###.#######.#.#####.#.###.#.###.#.#.#######.#",
-"#...#.#.....#.....#.#.#...#.....#.#...#.#...#...#.....#.#...#.#.#.#...#.......#.#",
-"#####.###########.#.#.###.#######.#.###.#.#.#.#######.#.###.#.#.#.#########.#.#U#",
-"#.....#.......#...#.#...#.#.......#.....#.#...#.....#...#.....#.#...........#.#.#",
-"#.#########.#.#.###.###.#.#.#######.#####.#####.#.###.#####.###.#.#######.#####.#",
-"#.#.......#.#.#.#..w#...#...#...#...#.K.#...#.#.#.....#...#.#...#.#.#...#.#.....#",
-"#.#.#####.#.#.#.###.#.#######.###.###.#.#.#.#.#.#######.#.###.###.#.#.#.#.#.#####",
-"#...#..p....#.#...#.#...#...#...#.....#.#.#.#.#...#.....#...#...#.#...#...#.....#",
-"#.###########.###.#.###.#.#.#R#.#######.#.#.#.###.#.#######.###.#.###.#########.#",
-"#.#.......#.....#.#.#...#.#.#.#.......#.#.#.#.....#.#.#.....#.#.#...#.#.......#.#",
-"#.#.#####.#######.#.#####M###.#.#####.#.#.#.###.###.#.#.#####.#W#.#.###.#.###.#.#",
-"#.#.#.#.........#.#.#...#...#.#...#..m#.#.#...#.#...#.#.#...#j..#.#.#...#.#...#.#",
-"#.#.#.#.#######.#.#.#.#.###.#.###.#####.#.###.###.###.#.#.#.#######.#.###.#.###.#",
-"#.#.#.....#...#...#...#...#...#...#.....#.#.#.....#...#...#.........#.#...#.Q.#.#",
-"#.#.#####.#.#.###########.#.###.#.#.#####.#.#######.#.#####.###.#####.#.#.#####.#",
-"#.#.....#.#.#.........#...#.#...#.#.#...#...#.......#.#.#...#.#.#.G...#.#.#...#.#",
-"#######.###.#########.#J#####L###.#.#.#.###.###.#.###.#.#.###.#.#.#####.###.#.#.#",
-"#.....#.......#...#...#.#...#.#...#...#.#.#...#.#.#.....#.#...#.#.#...#.....#.Y.#",
-"#B###.#######.###.#.###.#.#.#.#########.#.###.#.#.#######.#.###.#.#.#############",
-"#.#...#...#...#...#...#l..#...#.....#...#.#...#.#.......#.#.....#.#.........#...#",
-"#.###.#.#.#.###.#####.#######.#.###.#.###.#.###.#######.#.#####.#.#.###.###.#.###",
-"#...#...#.#.....#...#...#...#.#.#.#...#.#.#.#...#.......#.....#.#.#...#.#...#f..#",
-"#.#.#####.#.#####.#.###.#.#.#.#.#.#####.#.#.#####.#####.#####.###.#####.#.#####.#",
-"#.#.....#.#.#.....#.#...#r#...#.....#...#.#.....#.#...#.#...#..o#.#.....#.#.....#",
-"#.#####.#.###.#####.#.#.###########.#.#.#.#####.#.#.###.###.###.#.#.#####.#.#.#.#",
-"#...#.#.#.....#z..#...#.#.....#.....#.#.#c....#.#.#...#.....#...#...#....t#.#.#.#",
-"###.#.#.#######.#.#######.###.#.#######.#.#.###.#.#.#.#####.#.#######.#######.#.#",
-"#.....#.........#...........#...........#.#.......#.#.......#.................#.#",
-"#################################################################################"
-];
+const fs = require('fs');
 
-/*
-Shortest paths are 136 steps;
-one is: a, f, b, j, g, n, h, d, l, o, e, p, c, i, k, m
-*/
-const example136 = [
-"#################",
-"#i.G..c...e..H.p#",
-"########.########",
-"#j.A..b...f..D.o#",
-"########@########",
-"#k.E..a...g..B.n#",
-"########.########",
-"#l.F..d...h..C.m#",
-"#################"
-];
-
-function findStart(inputMap)
+function readFromFile(filename)
 {
-    let x=0;
+    const fileData = fs.readFileSync(filename, 'utf8');
+    const lines = fileData.split(/\n/);
+    let output = []
+    for (let line of lines){
+        line = line.trim();
+        if (line != ""){
+            output.push(line);
+        }
+    }
+    return output;
+}
+
+function buildSet(keys)
+{
+    let keyset = {};
+    for (let key of keys){
+        keyset[key] = true;
+    }
+    return keyset;
+}
+
+function buildkeyset()
+{
+    return buildSet("abcdefghijklmnopqrstuvwxyz");
+}
+
+function findRoutes(map)
+{
+    let tilesOfInterest = buildkeyset();
+    tilesOfInterest['@'] = true;
+    tilesOfInterest['1'] = true;
+    tilesOfInterest['2'] = true;
+    tilesOfInterest['3'] = true;
+    tilesOfInterest['4'] = true;
+
+    let routes = {}
     let y=0;
-    while (y < inputMap.length){
-        let row = inputMap[y];
-        for (x=0; x<row.length; ++x){
-            if (row[x] == '@'){
-                return {x, y};
+    for (let row of map){
+        let x=0;
+        for(let tile of row){
+            if (tilesOfInterest[tile]){
+                routes[tile] = findDistances({x, y}, map);
             }
+            ++x;
         }
         ++y;
     }
-
-    return {x, y}
+    return routes;
 }
 
-function findAllKeys(inputMap)
+const keysAndDoors = buildSet("abcdefghijklmnopqrstuvwxzyABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+// Finds the distance from pos to every interesting tile on the map
+function findDistances(pos, map)
 {
-    let keys = {};
-    let x=0;
-    let y=0;
-    while (y < inputMap.length){
-        let row = inputMap[y];
-        for (x=0; x<row.length; ++x){
-            if(/[a-z]/.test(row[x])){
-                keys[row[x]] = {x, y}
+    let queue = [{pos, dist:0, route: ''}];
+    let visited = {}
+    let routeInfo = {}
+
+    while (queue.length > 0){
+        let {pos, dist, route} = queue.shift();
+        let tile = map[pos.y][pos.x];
+        if (dist > 0 && keysAndDoors[tile]){
+            // If it's not the starting point and is a key or door make a note of
+            // how far it was to get here and what route we took.
+            routeInfo[tile] = {dist, route};
+            // extend the route with this waypoint
+            route = route + tile;
+        }
+        visited[printPos(pos)] = true;
+
+        // Explore each possible direction.
+        for (let dir of [[1,0], [0,1], [-1,0], [0,-1]]){
+            let nextX = pos.x + dir[0];
+            let nextY = pos.y + dir[1];
+            if (nextX >= 0 && nextX < map[0].length && nextY >= 0 && nextY < map.length &&
+                !visited[printPos({x: nextX, y: nextY})])
+            {
+                if (map[nextY][nextX] !== '#'){
+                    queue.push({pos: {x: nextX, y: nextY}, dist: dist+1, route});
+                }
             }
         }
-        ++y;
     }
-
-    return keys;
-}
-
-function findNeighbours(pos, inputMap)
-{
-    let neighbours = [];
-
-    if (pos.y > 0 && inputMap[pos.y-1][pos.x] != '#'){
-        neighbours.push({x: pos.x, y: pos.y-1})
-    }
-    if (pos.y+1 < inputMap.length && inputMap[pos.y+1][pos.x] != '#'){
-        neighbours.push({x: pos.x, y: pos.y+1})
-    }
-    if (pos.x > 0 && inputMap[pos.y][pos.x-1] != '#'){
-        neighbours.push({x: pos.x-1, y: pos.y})
-    }
-    if (pos.x+1 < inputMap[pos.y].length && inputMap[pos.y][pos.x+1] != '#'){
-        neighbours.push({x: pos.x+1, y: pos.y})
-    }
-    return neighbours;
+    return routeInfo;
 }
 
 function printPos(pos)
@@ -157,132 +94,124 @@ function printPos(pos)
     return "" + pos.x + "," + pos.y;
 }
 
-// Given a start position, a set of held keys and an inputMap,
-// return the keys we can reach and the minimum distance to each one.
-function findAvailableKeys(start, keys, inputMap, visited={}, distance=0)
+function solvePt1(map)
 {
-    // track where we have been so we don't backtrack.
-    visited[printPos(start)] = distance;
+    let routes = findRoutes(map);
 
-    let foundKeys = {}
-
-    // Keep searching until we hit a wall or a locked door.
-    let neighbours = findNeighbours(start, inputMap);
-    for (let neighbour of neighbours){
-        if (!(printPos(neighbour) in visited)){
-            let keepGoing = true;
-
-            let el = inputMap[neighbour.y][neighbour.x];
-            // check lowercase letter for key
-            if(/[a-z]/.test(el)){
-                if (!(el in keys)){
-                    // haven't seen this key before so pick it up
-                    foundKeys[el] = distance+1;
-                    // stop because we want to explore paths from here.
-                    keepGoing = false;
-                }
-            }
-                
-            // check uppercase letter for door
-            if(/[A-Z]/.test(el)){
-                // Check if we have the key
-                if (!(el.toLowerCase() in keys)){
-                    keepGoing = false;
-                }
-            }
-            if (keepGoing){
-                let nextKeys = findAvailableKeys(neighbour, keys, inputMap, visited, distance+1);
-                foundKeys = {...foundKeys, ...nextKeys}
-            }
+    const allKeys = buildkeyset();
+    let keys = [];
+    for (let k of Object.keys(routes)){
+        if (k in allKeys){
+            keys.push(k);
         }
     }
 
-    return foundKeys;
-}
-
-function buildCandidates(keys, keysHeld, allKeys)
-{
-    let candidatePaths = [];
-    
-    for (let key of Object.keys(keys)){
-        let stepsSoFar = keys[key];
-        
-        if (stepsSoFar > 0){
-            let cobj = {
-                stepsSoFar: keys[key],
-                keysHeld: {...keysHeld},
-                pos: allKeys[key]
-            }
-            cobj.keysHeld[key] = keys[key];
-            candidatePaths.push(cobj);
-
-        }
-    }
-    return candidatePaths;
-}
-
-// Solves the given map and returns the minimum steps.
-function solve(inputMap)
-{
-    let allKeys = findAllKeys(inputMap);
-    console.log("found " + allKeys.length + " keys");
-
-    let start = findStart(inputMap);
-    console.log("start = " + printPos(start));
-    
-    //go down each path until all keys are found
-    let keys = {};
-    keys = findAvailableKeys(start, keys, inputMap);
-    console.log(JSON.stringify(keys));
-
-    let candidatePaths = buildCandidates(keys, {}, allKeys);
-
-    console.log(JSON.stringify(candidatePaths))
-
-    let solution = {stepsSoFar: 1000000000}
-    const totalKeys = Object.keys(allKeys).length;
-
-    while(candidatePaths.length > 0){
-        let nextCandidates = [];
-        for (let candidate of candidatePaths){
-            keys = findAvailableKeys(candidate.pos, candidate.keysHeld, inputMap, {}, candidate.stepsSoFar);
-            let potentialNextCandidates = buildCandidates(keys, candidate.keysHeld, allKeys)
-            for (let nextCandidate of potentialNextCandidates){
-                if (nextCandidate.stepsSoFar > solution.stepsSoFar){
-                    // abort as we've already found a better path
-                } else if (Object.keys(nextCandidate.keysHeld).length === totalKeys){
-                    // done
-                    if (nextCandidate.stepsSoFar < solution.stepsSoFar){
-                        solution = nextCandidate;
+    // maps current tile + keys held to a distance.
+    // Starts with @ with no keys.
+    let info = {'@': 0}
+    for (let keyNo in keys){
+        let nextInfo = {}
+        for (let infoKey of Object.keys(info)){
+            let keysHeld = infoKey.slice(1);
+            for (newKey of keys){
+                if (!keysHeld.includes(newKey)){
+                    // The shortest route from infoKey[0] -> newKey
+                    let shortestRoute = routes[infoKey[0]][newKey];
+                    // make sure we can reach it
+                    let reachable = isReachable(shortestRoute.route, keysHeld);
+                    if (reachable){
+                        let newDist = info[infoKey] + shortestRoute.dist;
+                        let newKeysHeld = keysHeld + newKey;
+                        let newInfoKey = newKey + newKeysHeld.split('').sort().join('');
+                        if (!nextInfo[newInfoKey] || nextInfo[newInfoKey] > newDist){
+                            nextInfo[newInfoKey] = newDist;
+                        }
                     }
-                } else {
-                    // Explore from this location
-                    nextCandidates.push(nextCandidate);
                 }
             }
         }
-        candidatePaths = nextCandidates;
-        console.log('candidate paths = ' + JSON.stringify(candidatePaths))
+        info = nextInfo;
     }
-
-    console.log(JSON.stringify(solution))
-    return solution.stepsSoFar;
+    let minDist = 10000000;
+    for (let dist of Object.values(info)){
+        if (dist < minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
 }
 
-const example8=[
-"#########",
-"#b.A.@.a#",
-"#########"
-];
+// Given a set of keys, can we traverse the route.
+function isReachable(route, keysHeld)
+{
+    for (let tile of route){
+        if (!keysHeld.includes(tile.toLowerCase())){
+            return false;
+        }
+    }
+    return true;
+}
 
-const example86=[
-"########################",
-"#f.D.E.e.C.b.A.@.a.B.c.#",
-"######################.#",
-"#d.....................#",
-"########################"
-]
+function solvePt2(map)
+{
+    let routes = findRoutes(map);
 
-let minSteps = solve(example136);
+    const allKeys = buildkeyset();
+    let keys = [];
+    for (let k of Object.keys(routes)){
+        if (k in allKeys){
+            keys.push(k);
+        }
+    }
+
+    // maps current tile + keys held to a distance.
+    // Starts with @ with no keys.
+    let info = {'1234': 0}
+    for (let keyNo in keys){
+        let nextInfo = {}
+        for (let infoKey of Object.keys(info)){
+            let keysHeld = infoKey.slice(4);
+            for (newKey of keys){
+                if (!keysHeld.includes(newKey)){
+                    for (let bot=0; bot<4; ++bot){
+                        let botTile = infoKey[bot];
+                        if (routes[botTile][newKey]){
+                            // The shortest route from infoKey[bot] -> newKey
+                            let shortestRoute = routes[botTile][newKey];
+                            // make sure we can reach it
+                            let reachable = isReachable(shortestRoute.route, keysHeld);
+                            if (reachable){
+                                let newDist = info[infoKey] + shortestRoute.dist;
+                                let newKeysHeld = keysHeld + newKey;
+                                let botArray = infoKey.slice(0, 4).split('');
+                                botArray[bot] = newKey; // where the new bot is.
+                                let newInfoKey = botArray.join('') + newKeysHeld.split('').sort().join('');
+                                if (!nextInfo[newInfoKey] || nextInfo[newInfoKey] > newDist){
+                                    nextInfo[newInfoKey] = newDist;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        info = nextInfo;
+    }
+    let minDist = 10000000;
+    for (let dist of Object.values(info)){
+        if (dist < minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
+}
+
+
+const input = readFromFile('../inputs/day18.txt')
+let minSteps = solvePt1(input);
 console.log(minSteps);
 
+// Edited the input by hand.
+const inputpt2 = readFromFile('../inputs/day18_pt2.txt')
+minSteps = solvePt2(inputpt2);
+console.log(minSteps);
