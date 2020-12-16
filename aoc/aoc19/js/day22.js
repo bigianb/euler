@@ -92,4 +92,50 @@ After shuffling your new, giant, factory order deck that many times, what number
 
 */
 
-// deck size is prime
+function gcdExtended(a, b) {
+    let x = 0, y = 1, u = 1, v = 0;
+    while (a !== 0) {
+        let q = Math.floor(b / a);
+        [x, y, u, v] = [u, v, x - u * q, y - v * q];
+        [a, b] = [b % a, a];
+    }
+    return [b, x, y];
+}
+
+function modInverse(a, m) {
+    const [g, x] = gcdExtended(a, m);
+    if (g !== 1) throw('Bad mod inverse')
+    return (x + m) % m;
+}
+
+function modDiv(a, b, modulus) {
+    return Number(BigInt(a) * BigInt(modInverse(b, modulus)) % BigInt(modulus));
+}
+
+function mulMod(a,b,modulus) {
+    return Number(BigInt(a) * BigInt(b) % BigInt(modulus))
+}
+
+function solvePt2(input, deckSize, targetPos, repeats) {
+    let [a, b] = input.reduceRight(([a, b], step) => {
+        if (step.opcode === 'cut'){
+            return [a, ((b + Number(step.args[0])) % deckSize + deckSize) % deckSize];
+        } else if (step.opcode === 'deal' && step.args[0] === 'into'){
+            return [(deckSize - a) % deckSize, (2*deckSize - b - 1) % deckSize]
+        } else {
+            const increment = Number(step.args[2]);
+            return [modDiv(a, increment, deckSize), modDiv(b, increment, deckSize) ];
+        }
+    }, [1, 0]);
+    while (repeats) {
+      if (repeats % 2) targetPos = (mulMod(targetPos,a,deckSize) + b) % deckSize;
+      [a, b] = [mulMod(a,a,deckSize), (mulMod(a,b,deckSize) + b) % deckSize];
+      repeats = Math.floor(repeats / 2);
+    }
+    return targetPos;
+  }
+  
+  let input = readFromFile('../inputs/day22.txt');
+  let part2 = solvePt2(input, 119315717514047, 2020, 101741582076661);
+  console.log('' + part2);
+
