@@ -65,7 +65,7 @@ function buildPortalMap(portalInfos)
             for (let p of portalInfos){
                 if (p.name === portalInfo.name && p !== portalInfo){    
                     let pStr = '' + portalInfo.pos.x + ',' + portalInfo.pos.y;
-                    portals[pStr] = {tgt: p.tgt, name: p.name};
+                    portals[pStr] = {tgt: p.tgt, name: p.name, outer: portalInfo.outer};
                 }
             }
         }
@@ -130,11 +130,12 @@ function printLPos(pos, level)
 
 function solvePt2(map, portals)
 {
-    let queue = [{pos: portals.start, level: 0, dist:0}];
+    const maxLevel = Object.keys(portals.portals).length;
+    let queue = [{pos: portals.start, level: 0, dist:0, innerPortalsVisited: {}}];
     let visited = {}
     let bestDist = 1000000;
     while (queue.length > 0){
-        let {pos, level, dist} = queue.shift();
+        const {pos, level, dist, innerPortalsVisited} = queue.shift();
         if (pos.x === portals.end.x && pos.y === portals.end.y && level === 0){
             if (dist < bestDist) {
                 bestDist = dist;
@@ -147,28 +148,42 @@ function solvePt2(map, portals)
                 let nextX = pos.x + dir[0];
                 let nextY = pos.y + dir[1];
                 let nextLevel = level;
-                let strPos = printLPos({x: nextX, y: nextY}, level)
+                let strPos = printLPos({x: nextX, y: nextY}, level);
+                let nextInnerPortalsVisited = {...innerPortalsVisited};
                 if (!visited[strPos] || dist < visited[strPos] )
                 {
                     if (map[nextY][nextX] !== '#'){
-                        let key = ''+nextX+','+nextY;
+                        const key = ''+nextX+','+nextY;
                         if (portals.portals[key]){
                             const portal = portals.portals[key];
                             if (portal.outer && level === 0){
 
                             } else {
-                                nextLevel = portal.outer? level-1 : level+1;
-                                let portalTgt = portal.tgt;
-                                nextX = portalTgt.x;
-                                nextY = portalTgt.y;
-                                strPos = printLPos({x: nextX, y: nextY}, nextLevel)
+                                let skip = false;
+                                if (!portal.outer){
+                                    // only descend if we've not gone down this portal before
+                                    if (nextInnerPortalsVisited[key]){
+//                                        skip = true;
+                                    }
+                                    nextInnerPortalsVisited[key] = true;
+                                }
+                                if (!skip){
+                                    nextLevel = portal.outer? level-1 : level+1;
+                                    if (level < 2){
+                                    console.log('going through ' + portal.name + ' on level ' + level + ' next level ' + nextLevel + ', dist is ' + dist);
+                                    }
+                                    let portalTgt = portal.tgt;
+                                    nextX = portalTgt.x;
+                                    nextY = portalTgt.y;
+                                    strPos = printLPos({x: nextX, y: nextY}, nextLevel);
+                                }
                             }
                         } else if (map[nextY][nextX] !== '.'){
-                            console.log(map[nextY][nextX]);
+                            //console.log(''+map[nextY][nextX] + ' at level ' + level);
                         }
                         if (map[nextY][nextX] === '.' && (!visited[strPos] || dist < visited[strPos])){
-                            if (dist < 1000 && level < 50){
-                                queue.push({pos: {x: nextX, y: nextY}, level: nextLevel, dist: dist+1});
+                            if (level <= maxLevel){
+                                queue.push({pos: {x: nextX, y: nextY}, level: nextLevel, dist: dist+1, innerPortalsVisited: nextInnerPortalsVisited});
                             }
                         }
                     }
