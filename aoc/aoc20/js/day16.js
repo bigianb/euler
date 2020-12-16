@@ -52,5 +52,97 @@ function parseFieldDef(line)
     return {name, ranges};
 }
 
+function isValid(val, ranges)
+{
+    return ranges.reduce((valid, range) => {return valid || (val >= range[0] && val <= range[1])}, false)
+}
+
+function findInvalidValues(data)
+{
+    let invalidValues = [];
+    for(let ticket of data.nearbyTickets){
+        for (let val of ticket){
+            let valid = data.fieldDefs.filter(def => isValid(val, def.ranges));
+            if (valid.length === 0){
+                invalidValues.push(val);
+            }
+        }
+    }
+    return invalidValues;
+}
+
+function isTicketValid(ticket, fieldDefs)
+{
+    for (let val of ticket){
+        let valid = fieldDefs.filter(def => isValid(val, def.ranges));
+        if (valid.length === 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+function findValidTickets(data)
+{
+    return data.nearbyTickets.filter(ticket => isTicketValid(ticket, data.fieldDefs));
+}
+
+function findCandidatePositions(tickets, fieldDef)
+{
+    let positions = new Set();
+    for (let pos=0; pos < tickets[0].length; ++pos){
+        positions.add(pos);
+    }
+    for (let ticket of tickets){
+        for (let pos=0; pos < ticket.length; ++pos){
+            const val = ticket[pos];
+            if (!isValid(val, fieldDef.ranges)){
+                positions.delete(pos);
+            }
+        }
+    }
+    return positions;
+}
+
+function findValidPositions(tickets, fieldDefs)
+{
+    for (let def of fieldDefs){
+        def.candidatePositions = findCandidatePositions(tickets, def);
+    }
+}
+
+function assignPositions(fieldDefs)
+{
+    let numRemaining = fieldDefs.length;
+    while (numRemaining > 0){
+        for (let def of fieldDefs){
+            if (def.candidatePositions.size === 1){
+                def.position = def.candidatePositions.values().next().value;
+                def.candidatePositions.clear();
+                --numRemaining;
+                for (let def2 of fieldDefs){
+                    def2.candidatePositions.delete(def.position);
+                }
+            }
+        }
+    }
+}
+
 let data = readFromFile('../inputs/day16_example.txt');
-console.log(JSON.stringify(data));
+let invalidValues = findInvalidValues(data);
+console.log('Example,should be 71: '+invalidValues.reduce((a,b) => a+b));
+
+data = readFromFile('../inputs/day16.txt');
+let validTickets = findValidTickets(data);
+findValidPositions(validTickets, data.fieldDefs)
+assignPositions(data.fieldDefs);
+
+let result=1;
+for (let def of data.fieldDefs){
+    if (def.name.startsWith("departure")){
+        let val = data.ticket[def.position];
+        result *= val;
+    }
+}
+console.log('part 2 result: '+result);
+
