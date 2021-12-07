@@ -1,0 +1,68 @@
+<html><head>
+<meta charset="utf-8"/>
+<title>Advent of Code Stats</title>
+<link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:300&subset=latin,latin-ext" rel="stylesheet" type="text/css"/>
+<style>body {
+  background: #0f0f23; /*337 x 5*/
+  color: #cccccc;
+  font-family: "Source Code Pro", monospace;
+  font-size: 14pt;
+  min-width: 60em;
+}
+img { border:0; }
+a { outline:0; }
+main, figure, figcaption { display:block; }
+pre, code { font-family: "Source Code Pro", monospace; }
+header, main {
+  -webkit-text-size-adjust: none;
+}
+
+a {
+  text-decoration: none;
+  color: #009900;
+}
+a:hover, a:focus {
+  color: #99ff99;
+}
+h1, h2 {
+  font-size: 1em;
+  font-weight: normal;
+}
+code {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+code:before {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  display: block;
+  left: -2px;
+  right: -2px;
+  top: 3px;
+  bottom: 0px;
+  border: 1px solid #333340;
+  background: #10101a;
+}
+pre.wrap {
+  max-width: 100%;
+  white-space: pre-wrap;
+}
+
+p.wrap {
+  width: 45em;
+}
+
+.star-count {
+  color: #ffff66;
+}
+
+header {
+  white-space: nowrap;
+  cursor: default;
+  z-index: 100;
+  margin-bottom: 2em;
+}
+</style></head><body><h1>2021 Leaderboard</h2><table><thead><tr><th>Player</th><th>Points</th><th>Stars</th></tr></thead><tbody><tr><td>Antony Mee</td><td>497</td><td>12</td></tr><tr><td>Bernard Kuc</td><td>457</td><td>12</td></tr><tr><td>Praveen Muralidharan</td><td>456</td><td>12</td></tr><tr><td>Jackie Liu</td><td>449</td><td>12</td></tr><tr><td>Ming CHEN</td><td>430</td><td>12</td></tr><tr><td>Tom Roadnight</td><td>412</td><td>12</td></tr><tr><td>Wenni Zheng</td><td>404</td><td>10</td></tr><tr><td>Chao Ning</td><td>387</td><td>12</td></tr><tr><td>Ian Brown</td><td>384</td><td>12</td></tr><tr><td>Pedro Lara Benitez</td><td>328</td><td>10</td></tr><tr><td>Darren Gawley</td><td>322</td><td>10</td></tr><tr><td>Kieran Hobden</td><td>321</td><td>10</td></tr><tr><td>Simon Pascoe</td><td>273</td><td>7</td></tr><tr><td>Minal Vaity</td><td>216</td><td>7</td></tr><tr><td>James Mewis</td><td>196</td><td>6</td></tr><tr><td>Vish KG</td><td>189</td><td>6</td></tr><tr><td>Hanse Chung</td><td>125</td><td>5</td></tr><tr><td>Peter Keysers</td><td>124</td><td>5</td></tr><tr><td>endore</td><td>123</td><td>4</td></tr></tbody></table><h1>All years star count</h2><table><thead><tr><th>Player</th><th>Total</th><th>2015</th><th>2016</th><th>2017</th><th>2018</th><th>2019</th><th>2020</th><th>2021</th></tr></thead><tbody><tr><td>Antony Mee</td><td>175</td><td>12</td><td>0</td><td>22</td><td>29</td><td>50</td><td>50</td><td>12</td></tr><tr><td>Ian Brown</td><td>137</td><td>0</td><td>0</td><td>2</td><td>34</td><td>50</td><td>39</td><td>12</td></tr><tr><td>Darren Gawley</td><td>136</td><td>0</td><td>0</td><td>4</td><td>26</td><td>46</td><td>50</td><td>10</td></tr><tr><td>Bernard Kuc</td><td>101</td><td>0</td><td>0</td><td>0</td><td>0</td><td>39</td><td>50</td><td>12</td></tr><tr><td>Peter Keysers</td><td>94</td><td>0</td><td>0</td><td>12</td><td>28</td><td>23</td><td>26</td><td>5</td></tr><tr><td>Chao Ning</td><td>62</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>50</td><td>12</td></tr><tr><td>Tom Roadnight</td><td>62</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>50</td><td>12</td></tr><tr><td>Ming CHEN</td><td>62</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>50</td><td>12</td></tr><tr><td>Miro Paskov</td><td>56</td><td>0</td><td>0</td><td>0</td><td>18</td><td>13</td><td>25</td><td>0</td></tr><tr><td>Praveen Muralidharan</td><td>56</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>44</td><td>12</td></tr><tr><td>ariana-ch</td><td>55</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5</td><td>50</td><td>0</td></tr><tr><td>Simon Pascoe</td><td>55</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>44</td><td>7</td></tr><tr><td>Dduva</td><td>54</td><td>0</td><td>0</td><td>0</td><td>0</td><td>25</td><td>29</td><td>0</td></tr><tr><td>Vish KG</td><td>50</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>40</td><td>6</td></tr><tr><td>Wenni Zheng</td><td>46</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>32</td><td>10</td></tr><tr><td>endore</td><td>38</td><td>0</td><td>0</td><td>0</td><td>0</td><td>13</td><td>21</td><td>4</td></tr><tr><td>James Mewis</td><td>38</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>32</td><td>6</td></tr><tr><td>Nagaraju Golla</td><td>37</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>37</td><td>0</td></tr><tr><td>Jackie Liu</td><td>37</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>25</td><td>12</td></tr><tr><td>Tom Jenkin</td><td>36</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>36</td><td>0</td></tr><tr><td>scarlettyaoyao</td><td>34</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>34</td><td>0</td></tr><tr><td>Tyler Mitchell</td><td>31</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>31</td><td>0</td></tr><tr><td>Nikolai Matiushev</td><td>28</td><td>0</td><td>0</td><td>0</td><td>0</td><td>22</td><td>6</td><td>0</td></tr><tr><td>AdriaanvanWyk</td><td>25</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>25</td><td>0</td></tr><tr><td>nhiggins13</td><td>22</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>22</td><td>0</td></tr><tr><td>vaish-parth</td><td>21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>21</td><td>0</td></tr><tr><td>Hanse Chung</td><td>18</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>13</td><td>5</td></tr><tr><td>Pedro Lara Benitez</td><td>12</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>10</td></tr><tr><td>Karl Westberg</td><td>11</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>11</td><td>0</td></tr><tr><td>Paul Ginzberg</td><td>10</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>10</td><td>0</td></tr><tr><td>Kieran Hobden</td><td>10</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>10</td></tr><tr><td>Rob Ellis</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td><td>0</td></tr><tr><td>Minal Vaity</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td></tr><tr><td>timbearcat2015</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td></tr><tr><td>Patrick Gerstner</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td></tr><tr><td>Sason Torosean</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td></tr><tr><td>pjgerstner</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td></tr><tr><td>Chao Ning</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></body></html>
