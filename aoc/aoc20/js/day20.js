@@ -112,19 +112,105 @@ function createVariants(tiles)
     }
 }
 
-function tryPopulate(dim, out, pos, tiles)
+function getTileVariantRows(arrangementVal)
 {
+    let variantId = arrangementVal.variant;
+    let flip = variantId >> 2;
+    let rot = variantId % 4;
+
+    let rows = arrangementVal.tile.rows.join('');
+    let rotated= [...rows]
+    switch (rot)
+    {
+        case 1:
+            // 90 deg CCW
+           for(let r=0; r<10; ++r){
+               for (let c=0; c<10; ++c){
+                   const cx = rows[r*10+c];
+                   rotated[(9-c)*10 + r] = cx;
+               }
+           }
+        break;
+
+        case 2:
+            // 180 deg CCW
+            for(let r=0; r<10; ++r){
+                for (let c=0; c<10; ++c){
+                    const cx = rows[r*10+c];
+                    rotated[(9-r)*10 + (9-c)] = cx;
+                }
+            }
+        break;
+
+        case 3:
+            // 270 deg CCW (90 deg CW)
+            // row 0 -> col 9
+            // col 0 -> row 0
+            for(let r=0; r<10; ++r){
+                for (let c=0; c<10; ++c){
+                    const cx = rows[r*10+c];
+                    rotated[c*10 + (9-r)] = cx;
+                }
+            }
+        break;
+    }
+    let flipped = [...rotated];
+    switch (flip)
+    {
+        case 1:
+            //horiz
+            for(let r=0; r<10; ++r){
+                for (let c=0; c<10; ++c){
+                    const cx = rotated[r*10+c];
+                    flipped[r*10 + (9-c)] = cx;
+                }
+            }
+        break;            
+        case 2:
+            // vert
+            for(let r=0; r<10; ++r){
+                for (let c=0; c<10; ++c){
+                    const cx = rotated[r*10+c];
+                    flipped[(9-r)*10 + c] = cx;
+                }
+            }
+        break;
+    }
+    return flipped;
+}
+
+function tryPopulate(dim, out, pos, corners, edges, middle)
+{
+    let tiles = middle;
+    const bottomRow =dim * (dim-1);
+    const col = pos % dim;
+    let isCorner = false;
+    let isEdge = false;
+    if (pos === 0 || pos === dim-1 || pos === bottomRow || pos === bottomRow + dim - 1){
+        isCorner = true;
+        tiles = corners;
+    } else if (pos < dim || pos >= bottomRow || col === 0 || col === dim - 1){
+        isEdge = true;
+        tiles = edges;
+    }
     for (let tile of tiles)
     {
         let remainingTiles = tiles.filter(t => t.id !== tile.id);
         for (let variant = 0; variant < tile.borders.length; ++variant){
             if (placeable(dim, out, pos, tile, variant)){
                 potentialOut = out.slice();
-                potentialOut[pos] = {id: tile.id, variant, borders: tile.borders[variant]}
+                potentialOut[pos] = {id: tile.id, variant, borders: tile.borders[variant], tile}
                 if (pos+1 === dim*dim){
                     return potentialOut;
                 }
-                let success = tryPopulate(dim, potentialOut, pos+1, remainingTiles)
+                let success = false;
+                if (isCorner){
+                    success = tryPopulate(dim, potentialOut, pos+1, remainingTiles, edges, middle);
+                } else if (isEdge){
+                    success = tryPopulate(dim, potentialOut, pos+1, corners, remainingTiles, middle);
+                } else {
+                    success = tryPopulate(dim, potentialOut, pos+1, corners, edges, remainingTiles);
+                }
                 if (success){
                     return success;
                 }
@@ -146,7 +232,7 @@ function findEdges(tiles)
         tile.uniqueEdges = Object.values(tile.borders[0]).reduce((prev, cur) => {
             return prev + (edges[cur].size === 1 ? 1 : 0)}, 0);
     })
-    return tiles;
+    return tiles.filter(tile => tile.uniqueEdges === 1);
 }
 
 function findCorners(tiles)
@@ -176,18 +262,55 @@ function placeable(dim, out, pos, tile, variant)
     return placeable;
 }
 
-let tiles = readTiles('../inputs/day20.txt');
+function getMap(arrangement, dim)
+{
+    let map = []
+    const stride = dim * 8;
+    let i=0;
+    for(let row=0; row<dim; ++row){
+        for (let col=0; col<dim; ++col){
+            let rows = getTileVariantRows(arrangement[i]);
+            let ypos = row * 8;
+            for (let tr=1; tr<9; ++tr){
+                let xpos = col * 8;
+                for (let tc=1; tc<9; ++tc){
+                    let c = rows[tr*10+tc];
+                    map[ypos * stride + xpos] = c;
+                    xpos += 1;
+                }
+                ypos += 1;
+            }
+            i+=1;
+        }
+    }
+    return map;
+}
+
+function printMap(map, dim)
+{
+    let s='';
+    for (let i=0; i<map.length; ++i){
+        if (i % (dim * 8) === 0){
+            console.log(s);
+            s = '';
+        }
+        s += map[i];
+    }
+    console.log(s);
+}
+
+let tiles = readTiles('./inputs/day20_example.txt');
 createVariants(tiles);
-findEdges(tiles);
+let edges = findEdges(tiles);
 let corners = findCorners(tiles);
 let checksum = corners.reduce((prev, cur) => {return prev * cur.id}, 1);
-console.log(checksum);
+console.log("Part 1 = " + checksum);
 
 const dim = Math.sqrt(tiles.length);
-//let arrangement= tryPopulate(dim, [], 0, tiles)
-//let checksum = arrangement[0].id * arrangement[dim-1].id * arrangement[(dim-1)*dim].id * arrangement[arrangement.length-1].id
+let middle = tiles.filter(tile => tile.uniqueEdges === 0);
+let arrangement= tryPopulate(dim, [], 0, corners, edges, middle);
+checksum = arrangement[0].id * arrangement[dim-1].id * arrangement[(dim-1)*dim].id * arrangement[arrangement.length-1].id
+console.log("Part 1 = " + checksum);
 
-
-// Too slow for real data.
-// We know the outside edges are unique though so we can identify the edges and corners to speed things up
-
+let map = getMap(arrangement, dim);
+printMap(map, dim)
