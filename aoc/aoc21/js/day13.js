@@ -1,5 +1,4 @@
 const fs = require('fs');
-const internal = require('stream');
 
 function readFromFile(filename) {
     const fileData = fs.readFileSync(filename, 'utf8');
