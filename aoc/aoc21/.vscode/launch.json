@@ -13,7 +13,7 @@
         },
                 {
                         "name": "Launch JS",
-                        "program": "${workspaceFolder}/js/day14.js",
+                        "program": "${workspaceFolder}/js/day15.js",
                         "request": "launch",
                         "skipFiles": [
                                 "<node_internals>/**"
