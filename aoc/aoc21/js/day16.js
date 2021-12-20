@@ -45,8 +45,8 @@ function readLiteral(bitstream)
     while (hasMore)
     {
         hasMore = bitstream.take1() == 1;
-        let v= bitstream.take(4);
-        literal = ((literal << 4) | v);
+        const v = bitstream.take(4);
+        literal = literal * 16 + v;
     }
     return literal;
 }
@@ -124,16 +124,10 @@ function executePacket(packet)
         case 2:
             output = childVals[0];
             childVals.forEach(v => {if(v < output){output = v}});
-            //if (childVals.length > 1){
-            //    output = Math.min(...childVals);
-            //}
             break;
         case 3:
             output = childVals[0];
             childVals.forEach(v => {if(v > output){output = v}});
-            //if (childVals.length > 1){
-            //    output = Math.max(...childVals);
-           // }
             break;
         case 4:
             output = packet.literal;
