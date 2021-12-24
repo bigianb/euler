@@ -166,20 +166,43 @@ function addLines(lines)
     return num;
 }
 
-let num = parse('[[[[[9,8],1],2],3],4]');
-console.log(stringify(num));
+function findMaxMag(lines)
+{
+    let maxMag=0;
+    let numLines = lines.length;
+    for (let i=0; i<numLines; ++i){
+        for (let j=0; j<numLines; ++j){
+            if (i !== j){
+                let n = add(parse(lines[i]), parse(lines[j]));
+                let mag = calcMag(n);
+                if (mag > maxMag){
+                    maxMag = mag;
+                }
+            }
+        }
+    }
+    return maxMag;
+}
+
+let num;
+
+//num = parse('[[[[[9,8],1],2],3],4]');
+//console.log(stringify(num));
 //explode(num, 0, {exploded:false});
 //console.log(stringify(num));
 
 //explode(parse('[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]'), [], 0, {exploded: false});
 
-num = add(parse('[[[[4,3],4],4],[7,[[8,4],9]]]'), parse('[1,1]'));
-console.log(stringify(num));
+//num = add(parse('[[[[4,3],4],4],[7,[[8,4],9]]]'), parse('[1,1]'));
+//console.log(stringify(num));
 
 let lines = readLines('./inputs/day18_example.txt');
 num = addLines(lines);
 console.log(calcMag(num));
 
+console.log('max mag = ' + findMaxMag(lines));
+
 lines = readLines('./inputs/day18.txt');
 num = addLines(lines);
 console.log(calcMag(num));
+console.log('max mag = ' + findMaxMag(lines));
