@@ -1,4 +1,3 @@
-const { createDiffieHellmanGroup } = require('crypto');
 const fs = require('fs');
 
 function readFromFile(filename)
