@@ -8,10 +8,14 @@ const data2019 = require('./data/2019.json');
 const data2020 = require('./data/2020.json');
 const data2021 = require('./data/2021.json');
 const data2022 = require('./data/2022.json');
+const data2023 = require('./data/2023.json');
+const data2024 = require('./data/2024.json');
 
 // Figure out stars per year per member.
 
 let allData = {}
+addData(data2024, allData);
+addData(data2023, allData);
 addData(data2022, allData);
 addData(data2021, allData);
 addData(data2020, allData);
@@ -25,10 +29,10 @@ addDisplayName(allData);
 
 let yearlyStarsTable = createYearlyStarsTable(allData);
 
-let stars2022 = createStarsForYearTable(allData, "2022");
+let stars2022 = createStarsForYearTable(allData, "2024");
 
 let html = "<html>"+htmlHeader()+"<body>"+
-            "<h1>2022 Leaderboard</h2>"+stars2022+
+            "<h1>2024 Leaderboard</h2>"+stars2022+
             "<h1>All years star count</h2>"+yearlyStarsTable+
             "</body></html>";
 fs.writeFileSync('YearlyStars.html', html);
@@ -53,7 +57,7 @@ function inlineStyle()
 function addDisplayName(dataIn)
 {
     Object.values(dataIn).forEach(member => {
-        let displayName = member["2022"].name;
+        let displayName = member["2024"].name;
         switch(displayName)
         {
             case "stevemcqueeniscool":
@@ -107,7 +111,7 @@ function createYearlyStarsTable(dataIn)
 
     let html = "<table>";
     html += "<thead><tr>";
-    html += "<th>Player</th><th>Total</th><th>2015</th><th>2016</th><th>2017</th><th>2018</th><th>2019</th><th>2020</th><th>2021</th><th>2022</th>"
+    html += "<th>Player</th><th>Total</th><th>2015</th><th>2016</th><th>2017</th><th>2018</th><th>2019</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th>"
     html += "</tr></thead>";
     html += "<tbody>";
     values.forEach(member => {
@@ -123,6 +127,8 @@ function createYearlyStarsTable(dataIn)
             html += "<td>"+member["2020"].stars+"</td>";
             html += "<td>"+member["2021"].stars+"</td>";
             html += "<td>"+member["2022"].stars+"</td>";
+            html += "<td>"+member["2023"].stars+"</td>";
+            html += "<td>"+member["2024"].stars+"</td>";
             html += "</tr>";
         }
     });
